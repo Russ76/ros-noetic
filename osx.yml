@@ -1,0 +1,36 @@
+pool:
+  vmImage: macOS-10.15
+trigger:
+- buildbranch_osx
+pr: none
+stages:
+- stage: stage_0
+  jobs:
+  - job: ros_noetic_carrot_planner_ros_noetic_dwa_local_planner_ros_noetic_fake_localization_ros_noetic_global_planner_ros_noetic_move_slow_and_clear
+    steps:
+    - script: |-
+        \
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/build_osx.sh
+      env:
+        ANACONDA_API_TOKEN: $(ANACONDA_API_TOKEN)
+        CURRENT_RECIPES: ros-noetic-carrot-planner ros-noetic-dwa-local-planner ros-noetic-fake-localization
+          ros-noetic-global-planner ros-noetic-move-slow-and-clear
+      displayName: Build ros-noetic-carrot-planner ros-noetic-dwa-local-planner ros-noetic-fake-localization
+        ros-noetic-global-planner ros-noetic-move-slow-and-clear
+- stage: stage_1
+  jobs:
+  - job: ros_noetic_navigation
+    steps:
+    - script: |-
+        \
+        export CI=azure
+        export GIT_BRANCH=$BUILD_SOURCEBRANCHNAME
+        export FEEDSTOCK_NAME=$(basename ${BUILD_REPOSITORY_NAME})
+        .scripts/build_osx.sh
+      env:
+        ANACONDA_API_TOKEN: $(ANACONDA_API_TOKEN)
+        CURRENT_RECIPES: ros-noetic-navigation
+      displayName: Build ros-noetic-navigation
